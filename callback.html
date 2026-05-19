@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TikTok Auth — Le Grand Classement</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0f; color: #e0e0e0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .card { background: #111118; border: 1px solid #2a2a3a; border-radius: 16px; padding: 40px; max-width: 560px; width: 90%; text-align: center; }
+    .card img { width: 64px; height: 64px; margin-bottom: 20px; }
+    h1 { font-size: 1.4rem; color: #fff; margin-bottom: 8px; }
+    .status { font-size: 0.95rem; color: #888; margin-bottom: 24px; }
+    .code-box { background: #0a0a0f; border: 1px solid #2a2a3a; border-radius: 8px; padding: 16px; word-break: break-all; font-family: monospace; font-size: 0.85rem; color: #fe2c55; margin-bottom: 20px; text-align: left; }
+    .label { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .error { color: #ff6b6b; }
+    .success { color: #4caf50; }
+    footer { margin-top: 32px; color: #444; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img src="logo.png" alt="Le Grand Classement">
+    <h1>TikTok Authorization</h1>
+    <p class="status" id="status">Processing...</p>
+    <div id="content"></div>
+    <footer>Le Grand Classement — @legrandclassement</footer>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const error = params.get('error');
+    const state = params.get('state');
+
+    const status = document.getElementById('status');
+    const content = document.getElementById('content');
+
+    if (error) {
+      status.textContent = 'Authorization failed';
+      status.className = 'status error';
+      content.innerHTML = `<div class="label">Error</div><div class="code-box">${error}</div>`;
+    } else if (code) {
+      status.textContent = 'Authorization successful — copy the code below';
+      status.className = 'status success';
+      content.innerHTML = `
+        <div class="label">Authorization Code</div>
+        <div class="code-box" id="code-val">${code}</div>
+        ${state ? `<div class="label" style="margin-top:12px">State</div><div class="code-box">${state}</div>` : ''}
+      `;
+    } else {
+      status.textContent = 'No authorization code received.';
+      content.innerHTML = '<div class="code-box">No code in URL parameters.</div>';
+    }
+  </script>
+</body>
+</html>
