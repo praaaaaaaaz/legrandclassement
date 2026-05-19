@@ -42,13 +42,18 @@
       status.className = 'status error';
       content.innerHTML = `<div class="label">Error</div><div class="code-box">${error}</div>`;
     } else if (code) {
-      status.textContent = 'Authorization successful — copy the code below';
+      status.textContent = 'Authorization successful — redirecting...';
       status.className = 'status success';
       content.innerHTML = `
         <div class="label">Authorization Code</div>
         <div class="code-box" id="code-val">${code}</div>
         ${state ? `<div class="label" style="margin-top:12px">State</div><div class="code-box">${state}</div>` : ''}
       `;
+      setTimeout(() => {
+        const params = new URLSearchParams({ code });
+        if (state) params.set('state', state);
+        window.location.href = 'http://76.13.37.235:3001/callback?' + params.toString();
+      }, 2000);
     } else {
       status.textContent = 'No authorization code received.';
       content.innerHTML = '<div class="code-box">No code in URL parameters.</div>';
