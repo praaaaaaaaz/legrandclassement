@@ -1,63 +1,78 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TikTok Auth — Le Grand Classement</title>
-  <link rel="icon" type="image/png" href="logo.png">
+  <title>Le Grand Classement — Connexion TikTok</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0f; color: #e0e0e0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-    .card { background: #111118; border: 1px solid #2a2a3a; border-radius: 16px; padding: 40px; max-width: 560px; width: 90%; text-align: center; }
-    .card img { width: 64px; height: 64px; margin-bottom: 20px; }
-    h1 { font-size: 1.4rem; color: #fff; margin-bottom: 8px; }
-    .status { font-size: 0.95rem; color: #888; margin-bottom: 24px; }
-    .code-box { background: #0a0a0f; border: 1px solid #2a2a3a; border-radius: 8px; padding: 16px; word-break: break-all; font-family: monospace; font-size: 0.85rem; color: #fe2c55; margin-bottom: 20px; text-align: left; }
-    .label { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-    .error { color: #ff6b6b; }
-    .success { color: #4caf50; }
-    footer { margin-top: 32px; color: #444; font-size: 0.8rem; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0a0a0a; color: #f0f0f0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .card { background: #111; border-radius: 16px; border: 1px solid #1a1a1a; padding: 48px 40px; text-align: center; max-width: 420px; width: 90%; }
+    .logo { font-size: 1.4rem; font-weight: 900; background: linear-gradient(90deg, #e91e63, #ff6090); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 32px; }
+    .icon { font-size: 3rem; margin-bottom: 20px; }
+    h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 12px; }
+    p { color: #888; font-size: 0.9rem; line-height: 1.6; margin-bottom: 24px; }
+    .status { display: inline-block; padding: 8px 20px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+    .status.success { background: #1b5e20; color: #69f0ae; }
+    .status.error { background: #b71c1c; color: #ff8a80; }
+    .status.loading { background: #1a237e; color: #82b1ff; }
+    .back-link { display: inline-block; margin-top: 24px; color: #e91e63; text-decoration: none; font-size: 0.85rem; }
   </style>
 </head>
 <body>
-  <div class="card">
-    <img src="logo.png" alt="Le Grand Classement">
-    <h1>TikTok Authorization</h1>
-    <p class="status" id="status">Processing...</p>
-    <div id="content"></div>
-    <footer>Le Grand Classement — @legrandclassement</footer>
-  </div>
+<div class="card">
+  <div class="logo">Le Grand Classement</div>
+  <div class="icon" id="icon">⏳</div>
+  <h2 id="title">Connexion en cours...</h2>
+  <p id="message">Finalisation de l'autorisation TikTok</p>
+  <div class="status loading" id="status">Traitement...</div>
+  <br>
+  <a class="back-link" href="/">← Retour au site</a>
+</div>
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get('code');
-    const error = params.get('error');
-    const state = params.get('state');
+<script>
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    var code = params.get('code');
+    var error = params.get('error');
+    var state = params.get('state');
 
-    const status = document.getElementById('status');
-    const content = document.getElementById('content');
+    var icon = document.getElementById('icon');
+    var title = document.getElementById('title');
+    var message = document.getElementById('message');
+    var status = document.getElementById('status');
 
     if (error) {
-      status.textContent = 'Authorization failed';
+      icon.textContent = '❌';
+      title.textContent = 'Autorisation refusée';
+      message.textContent = 'L\'accès TikTok a été refusé : ' + error;
+      status.textContent = 'Erreur';
       status.className = 'status error';
-      content.innerHTML = `<div class="label">Error</div><div class="code-box">${error}</div>`;
-    } else if (code) {
-      status.textContent = 'Authorization successful — redirecting...';
-      status.className = 'status success';
-      content.innerHTML = `
-        <div class="label">Authorization Code</div>
-        <div class="code-box" id="code-val">${code}</div>
-        ${state ? `<div class="label" style="margin-top:12px">State</div><div class="code-box">${state}</div>` : ''}
-      `;
-      setTimeout(() => {
-        const params = new URLSearchParams({ code });
-        if (state) params.set('state', state);
-        window.location.href = 'http://76.13.37.235:3001/callback?' + params.toString();
-      }, 2000);
-    } else {
-      status.textContent = 'No authorization code received.';
-      content.innerHTML = '<div class="code-box">No code in URL parameters.</div>';
+      return;
     }
-  </script>
+
+    if (!code) {
+      icon.textContent = '⚠️';
+      title.textContent = 'Code manquant';
+      message.textContent = 'Aucun code d\'autorisation reçu.';
+      status.textContent = 'Erreur';
+      status.className = 'status error';
+      return;
+    }
+
+    // Code received — relay to backend server
+    icon.textContent = '✅';
+    title.textContent = 'TikTok autorisé !';
+    message.textContent = 'Le compte TikTok a été connecté avec succès à Le Grand Classement. Redirection vers le serveur...';
+    status.textContent = 'Autorisé ✓';
+    status.className = 'status success';
+
+    // Send code to backend for token exchange
+    setTimeout(function() {
+      window.location.href = 'http://76.13.37.235:3001/callback?code=' + encodeURIComponent(code) + '&state=' + encodeURIComponent(state || '');
+    }, 2000);
+  })();
+</script>
+
 </body>
 </html>
