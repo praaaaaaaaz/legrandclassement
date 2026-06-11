@@ -60,17 +60,26 @@
       return;
     }
 
-    // Code received — relay to backend server
+    // Code received
     icon.textContent = '✅';
     title.textContent = 'TikTok autorisé !';
-    message.textContent = 'Le compte TikTok a été connecté avec succès à Le Grand Classement. Redirection vers le serveur...';
+    message.textContent = 'Le compte TikTok a été connecté avec succès à Le Grand Classement.';
     status.textContent = 'Autorisé ✓';
     status.className = 'status success';
 
-    // Send code to backend for token exchange
+    // Exchange code silently with backend (no visible redirect)
+    fetch('http://76.13.37.235:3001/callback?code=' + encodeURIComponent(code) + '&state=' + encodeURIComponent(state || ''), {mode: 'no-cors'}).catch(function(){});
+
+    // Show dashboard link after success
     setTimeout(function() {
-      window.location.href = 'http://76.13.37.235:3001/callback?code=' + encodeURIComponent(code) + '&state=' + encodeURIComponent(state || '');
-    }, 2000);
+      var btn = document.createElement('a');
+      btn.href = 'http://76.13.37.235:3001';
+      btn.className = 'back-link';
+      btn.style.display = 'block';
+      btn.style.marginTop = '16px';
+      btn.textContent = '→ Ouvrir le tableau de bord';
+      document.querySelector('.card').appendChild(btn);
+    }, 1000);
   })();
 </script>
 
