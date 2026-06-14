@@ -67,19 +67,10 @@
     status.textContent = 'Autorisé ✓';
     status.className = 'status success';
 
-    // Exchange code silently with backend (no visible redirect)
-    fetch('http://76.13.37.235:3001/callback?code=' + encodeURIComponent(code) + '&state=' + encodeURIComponent(state || ''), {mode: 'no-cors'}).catch(function(){});
-
-    // Show dashboard link after success
+    // Redirect to backend for token exchange (navigation is allowed HTTPS→HTTP)
     setTimeout(function() {
-      var btn = document.createElement('a');
-      btn.href = 'http://76.13.37.235:3001';
-      btn.className = 'back-link';
-      btn.style.display = 'block';
-      btn.style.marginTop = '16px';
-      btn.textContent = '→ Ouvrir le tableau de bord';
-      document.querySelector('.card').appendChild(btn);
-    }, 1000);
+      window.location.href = 'http://76.13.37.235:3001/callback?code=' + encodeURIComponent(code) + '&state=' + encodeURIComponent(state || '');
+    }, 2000);
   })();
 </script>
 
